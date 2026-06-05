@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ScoutCal</title>
     <link rel="stylesheet" href="style.css" />
+
+    <!-- Link icon font-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
   </head>
   <body>
     <header>
@@ -15,23 +18,52 @@
     <main>
       <div class="space">
         <div class="hero">
-          <h1>Welcome to My Website Babe</h1>
-          <p>Built from scratch using HTML, CSS, and JavaScript.</p>
+          <h1>Locations</h1>
 
-          <div class="interactive-box">
-            <input type="text" id="user-name" placeholder="Enter your name" />
-            <button id="greet-btn">Say Hello</button>
-            <p id="greeting-text"></p>
+          <div class="add-address-box">
+            <input type="text" id="address-box" placeholder="Paste address here" class = "address-input"/>
+            <button id="address-add-btn" class = "address-add-btn"><i class="fa-solid fa-plus"></i></button>
+            
           </div>
+          
+          <ul class="address-list">
+            <li class="address-box">
+              <div class="address-subbox">
+              <h3 class="address-title">Tony Rys</h3>
+              <p class="address-detail">121 Avenue 25, Los Angeles 90001</p>
+              </div>
+              <div class="order-container">
+                <button class="order-up-btn"><i class="fa-solid fa-angle-up"></i></button>
+                <button class="order-down-btn"><i class="fa-solid fa-angle-down"></i></button>
+              </div>
+            </li>
+            <li class="address-box">
+              <div class="address-subbox">
+              <h3 class="address-title">Tony Rys</h3>
+              <p class="address-detail">121 Avenue 25, Los Angeles 90001</p>
+              </div>
+              <div class="order-container">
+                <button class="order-up-btn"><i class="fa-solid fa-angle-up"></i></button>
+                <button class="order-down-btn"><i class="fa-solid fa-angle-down"></i></button>
+              </div>
+            </li>
+            <li class="address-box">
+              <div class="address-subbox">
+              <h3 class="address-title">Tony Rys</h3>
+              <p class="address-detail">121 Avenue 25, Los Angeles 90001</p>
+              </div>
+              <div class="order-container">
+                <button class="order-up-btn"><i class="fa-solid fa-angle-up"></i></button>
+                <button class="order-down-btn"><i class="fa-solid fa-angle-down"></i></button>
+              </div>
+            </li>
+          </ul>
         </div>
         <div class="map">
-          <h2>Features</h2>
-          <ul>
-            <li>Customizable themes</li>
-            <li>Responsive design</li>
-            <li>Interactive elements</li>
-          </ul>
-      </div>
+          <div class="map-holder">
+            <p class="map">Place map here</p>
+          </div>      
+        </div>
     </main>
 
     <footer>
