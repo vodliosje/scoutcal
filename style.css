@@ -14,7 +14,7 @@
   --primary-color: #4a90e2;
   --header-bg: #1e293b;
   --medium-gray-color: #ccc;
-  --light-gray-color: #D5D6D6;
+  --light-gray-color: #d5d6d6;
   --white-color: #fff;
 
   /*Font Sizes*/
@@ -185,7 +185,8 @@ button {
   align-items: center;
   padding: 5px 10px;
   margin-bottom: 10px;
-  background-color: yellow;
+  /* Test here*/
+  background-color: var(--light-gray-color);
   border-radius: var(--border-radius-s);
 }
 
