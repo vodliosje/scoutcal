@@ -188,33 +188,45 @@ button {
   align-items: center;
   padding: 5px 10px;
   margin-bottom: 10px;
-  /* Test here*/
   background-color: var(--light-gray-color);
   border-radius: var(--border-radius-s);
 }
 
 .hero .address-box .address-subbox {
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: flex-start;
   text-align: center;
 }
-.hero .address-box .order-container {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.hero .order-container .order-up-btn,
-.order-down-btn {
-  width: 23px;
-  height: 23px;
-  font-weight: var(--font-weight-normal);
+
+/* Style for the item while it is being dragged */
+.sortable-ghost {
+  opacity: 0.4;
+  background: var(--light-gray-color) !important;
 }
 
-.hero .order-container .order-up-btn:hover,
-.order-down-btn:hover {
-  color: var(--bg-color);
-  background: var(--primary-color);
+.drag-handle {
+  margin-right: 5px;
+  cursor: grab;
+  color: var(--brown-color);
+  font-size: var(--font-size-n);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: var(--brown-color);
+  cursor: pointer;
+  font-size: var(--font-size-s);
+  transition: 0.15s ease;
+}
+.delete-btn:hover {
+  color: var(--red-color);
 }
 
 /* Map section */
