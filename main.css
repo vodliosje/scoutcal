@@ -202,6 +202,10 @@ button {
   text-align: center;
 }
 
+.hero .address-list .is-target {
+  border: solid 3px var(--red-color);
+}
+
 /* Style for the item while it is being dragged */
 .sortable-ghost {
   opacity: 0.4;

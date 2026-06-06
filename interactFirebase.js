@@ -12,20 +12,21 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const docRef = db.collection("appData").doc("my-addresses");
 
-console.log(
-  "Testing config project ID:",
-  import.meta.env.VITE_FIREBASE_PROJECT_ID,
-);
-
 // Save data to firebase
 export function saveToCloud() {
   const addresses = [];
+  const addressList = document.getElementById("addressList");
   const boxes = addressList.querySelectorAll(".address-box");
 
-  boxes.forEach((box) => {
+  boxes.forEach((box, index) => {
     const title = box.querySelector(".address-title").innerText;
     const detail = box.querySelector(".address-detail").innerText;
-    addresses.push({ name: title, address: detail });
+
+    addresses.push({
+      name: title,
+      address: detail,
+      isTarget: index === 0, // true for the first item, false for all others
+    });
   });
 
   // Save the array straight to your cloud document
@@ -36,42 +37,21 @@ export function saveToCloud() {
 }
 
 // Load data from firebase
-function loadFromCloud() {
+export function loadFromCloud(renderCallback) {
   docRef
     .get()
     .then((doc) => {
       if (doc.exists) {
-        const addresses = doc.data().list || [];
+        const addresses = doc.data();
+        renderCallback(addresses.list || []);
 
-        // Clear current list layout
-        addressList.innerHTML = "";
-
-        // Build list items out from the cloud array data
-        addresses.forEach((item) => {
-          const li = document.createElement("li");
-          li.className = "address-box";
-          li.innerHTML = `
-                    <span class="drag-handle"><i class="fa-solid fa-bars"></i></span>
-                    <div class="address-subbox">
-                        <h3 class="address-title">${item.name}</h3>
-                        <p class="address-detail">${item.address}</p>
-                    </div>
-                    <div class="action-btns">
-                        <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
-                        <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-          addressList.appendChild(li);
-        });
         console.log("Fresh list synchronized from cloud.");
       } else {
         console.log("No cloud data found yet. Creating clean slate.");
+        renderCallback([]);
       }
     })
     .catch((error) => {
       console.error("Error getting cloud document:", error);
     });
 }
-
-// Fetch cross-device data instantly when the application boots up
-loadFromCloud();

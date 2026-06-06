@@ -36,7 +36,49 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-import { saveToCloud } from "./interactFirebase.js";
+import { saveToCloud, loadFromCloud } from "./interactFirebase.js";
+
+// Evaluates the current DOM order and tags the first item
+function updateTargetHighlight() {
+  const boxes = addressList.querySelectorAll(".address-box");
+
+  boxes.forEach((box, index) => {
+    if (index === 0) {
+      // It's the first item: assign target status
+      box.classList.add("is-target");
+      box.dataset.target = "true";
+    } else {
+      // Not the first item: strip target status
+      box.classList.remove("is-target");
+      box.dataset.target = "false";
+    }
+  });
+}
+
+// Renders the initial list from Firebase
+function renderList(firebaseData) {
+  addressList.innerHTML = "";
+
+  firebaseData.forEach((item) => {
+    const li = document.createElement("li");
+    li.className = "address-box";
+    li.innerHTML = `
+    <span class="drag-handle"><i class="fa-solid fa-bars"></i></span>
+    <div class="address-subbox">
+        <h3 class="address-title">${item.name}</h3>
+        <p class="address-detail">${item.address}</p>
+    </div>
+    <div class="btn-container">
+        <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
+        <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
+    </div>
+    `;
+    addressList.appendChild(li);
+  });
+
+  // Run the highlight logic to catch the first item immediately on load
+  updateTargetHighlight();
+}
 
 // Initialize SortableJS on address list
 const list = document.getElementById("addressList");
@@ -45,10 +87,13 @@ Sortable.create(list, {
   animation: 150, // Smooth sliding animation speed (in ms)
   ghostClass: "sortable-ghost", // Class applied to the moving item
   onEnd: function (evt) {
+    updateTargetHighlight();
     saveToCloud();
     console.log("New order updated on Firebase!"); // Push order updates straight to the cloud when dragging stops
   },
 });
+
+loadFromCloud(renderList);
 
 // Handle Adding New Items
 const titleInput = document.getElementById("addressTitle");
@@ -64,12 +109,15 @@ addBtn.addEventListener("click", () => {
   const li = document.createElement("li");
   li.className = "address-box";
   li.innerHTML = `
-            <span class="drag-handle"><i class="fa-solid fa-bars"></i></span>
-            <div class="address-subbox">
-                <h3 class="address-title">${titleValue}</h3>
-                <p class="address-detail">${addressValue}</p>
-            </div>
-            <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
+    <span class="drag-handle"><i class="fa-solid fa-bars"></i></span>
+    <div class="address-subbox">
+        <h3 class="address-title">${item.name}</h3>
+        <p class="address-detail">${item.address}</p>
+    </div>
+    <div class="btn-container">
+        <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
+        <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
+    </div>
     `;
 
   list.appendChild(li);
