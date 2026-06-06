@@ -111,8 +111,8 @@ addBtn.addEventListener("click", () => {
   li.innerHTML = `
     <span class="drag-handle"><i class="fa-solid fa-bars"></i></span>
     <div class="address-subbox">
-        <h3 class="address-title">${item.name}</h3>
-        <p class="address-detail">${item.address}</p>
+        <h3 class="address-title">${titleValue}</h3>
+        <p class="address-detail">${addressValue}</p>
     </div>
     <div class="btn-container">
         <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
