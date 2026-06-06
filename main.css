@@ -197,6 +197,7 @@ button {
   margin-bottom: 10px;
   background-color: var(--light-gray-color);
   border-radius: var(--border-radius-s);
+  cursor: default;
 }
 
 .hero .address-box .address-subbox {

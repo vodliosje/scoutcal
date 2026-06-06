@@ -43,12 +43,15 @@ export function saveToCloud() {
 export function loadFromCloud(renderCallback) {
   docRef
     .get()
-    .then((doc) => {
+    .then(async (doc) => {
       if (doc.exists) {
         const addresses = doc.data();
-        renderCallback(addresses.list || []);
-        refreshMapWithFirebaseData(addresses.list);
 
+        const procressAddresses = await refreshMapWithFirebaseData(
+          addresses.list,
+        );
+        console.log(procressAddresses);
+        renderCallback(procressAddresses);
         console.log("Fresh list synchronized from cloud.");
       } else {
         console.log("No cloud data found yet. Creating clean slate.");

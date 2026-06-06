@@ -63,6 +63,8 @@ function renderList(firebaseData) {
   firebaseData.forEach((item) => {
     const li = document.createElement("li");
     li.className = "address-box";
+    li.dataset.lat = item.lat;
+    li.dataset.lng = item.lng;
     li.innerHTML = `
     <span class="drag-handle"><i class="fa-solid fa-bars"></i></span>
     <div class="address-subbox">
@@ -92,6 +94,25 @@ Sortable.create(list, {
     saveToCloud();
     console.log("New order updated on Firebase!"); // Push order updates straight to the cloud when dragging stops
   },
+});
+
+//Link map with addressList activities
+list.addEventListener("click", (event) => {
+  const targetLi = event.target.closest("li");
+  if (!targetLi) return;
+
+  // 2. Read the coordinates from the data attributes
+  const lat = parseFloat(targetLi.getAttribute("data-lat"));
+  const lng = parseFloat(targetLi.getAttribute("data-lng"));
+
+  // 3. Center the map to that coordinate
+  if (!isNaN(lat) && !isNaN(lng)) {
+    map.flyTo({
+      center: [lng, lat],
+      zoom: 13, // Zoom in tight on the clicked location
+      essential: true, // Ensures smooth animation
+    });
+  }
 });
 
 // Handle Adding New Items

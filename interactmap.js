@@ -171,4 +171,6 @@ export async function refreshMapWithFirebaseData(firebaseList) {
     }
   };
   attemptUpdate();
+  //console.log(cleanData);
+  return cleanData;
 }
