@@ -12,14 +12,10 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const docRef = db.collection("appData").doc("my-addresses");
 
-Sortable.create(addressList, {
-  handle: ".drag-handle",
-  animation: 150,
-  ghostClass: "sortable-ghost",
-  onEnd: function () {
-    saveToCloud(); // Push order updates straight to the cloud when dragging stops
-  },
-});
+console.log(
+  "Testing config project ID:",
+  import.meta.env.VITE_FIREBASE_PROJECT_ID,
+);
 
 // Save data to firebase
 function saveToCloud() {
