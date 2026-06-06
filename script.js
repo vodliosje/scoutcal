@@ -43,8 +43,8 @@ Sortable.create(list, {
   animation: 150, // Smooth sliding animation speed (in ms)
   ghostClass: "sortable-ghost", // Class applied to the moving item
   onEnd: function (evt) {
-    console.log("New order saved!");
-    // Optional: Loop through items here to save the new sequence to a database
+    saveToCloud();
+    console.log("New order updated on Firebase!"); // Push order updates straight to the cloud when dragging stops
   },
 });
 
@@ -71,6 +71,7 @@ addBtn.addEventListener("click", () => {
     `;
 
   list.appendChild(li);
+  saveToCloud();
   addressInput.value = ""; // Clear input
 });
 
@@ -80,6 +81,7 @@ list.addEventListener("click", (e) => {
   if (e.target.closest(".delete-btn")) {
     const itemToDelete = e.target.closest(".address-box");
     itemToDelete.remove();
+    saveToCloud();
   }
 
   // --- HANDLE EDIT BUTTON CLICK ---
@@ -110,6 +112,8 @@ list.addEventListener("click", (e) => {
       // Change icon back to a pen
       icon.className = "fa-solid fa-pen";
       editBtn.style.color = "#b89077"; // Reset back to blue
+
+      saveToCloud();
 
       // Optional: Log or save data to your backend here
       console.log("Saved data:", {

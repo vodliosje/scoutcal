@@ -6,10 +6,11 @@
     <title>ScoutCal</title>
     <link rel="stylesheet" href="main.css" />
 
-    <!--Link SortableJS-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
     <!-- Link icon font-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
   </head>
   <body>
     <header>
@@ -21,12 +22,24 @@
       <div class="space">
         <div class="hero">
           <h1>Locations</h1>
-          <input type="text" id="addressTitle" placeholder="Title" class = "address-input-title"/>
+          <input
+            type="text"
+            id="addressTitle"
+            placeholder="Title"
+            class="address-input-title"
+          />
           <div class="add-address-box">
-            <input type="text" id="addressBox" placeholder="Paste address here" class = "address-input"/>
-            <button id="addressAddBtn" class = "address-add-btn"><i class="fa-solid fa-plus"></i></button>
+            <input
+              type="text"
+              id="addressBox"
+              placeholder="Paste address here"
+              class="address-input"
+            />
+            <button id="addressAddBtn" class="address-add-btn">
+              <i class="fa-solid fa-plus"></i>
+            </button>
           </div>
-          
+
           <ul class="address-list" id="addressList">
             <li class="address-box">
               <span class="drag-handle"><i class="fa-solid fa-bars"></i></span>
@@ -35,11 +48,15 @@
                 <p class="address-detail">121 Avenue 25, Los Angeles 90001</p>
               </div>
               <div class="btn-container">
-                <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
-                <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
+                <button class="edit-btn">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="delete-btn">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
               </div>
             </li>
-            
+
             <li class="address-box">
               <span class="drag-handle"><i class="fa-solid fa-bars"></i></span>
               <div class="address-subbox">
@@ -47,8 +64,12 @@
                 <p class="address-detail">4638 Whitsler, El Monte, CA 90001</p>
               </div>
               <div class="btn-container">
-                <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
-                <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
+                <button class="edit-btn">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="delete-btn">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
               </div>
             </li>
           </ul>
@@ -56,14 +77,26 @@
         <div class="map">
           <div class="map-holder">
             <p class="map">Place map here</p>
-          </div>      
+          </div>
         </div>
+      </div>
     </main>
 
     <footer>
       <p>&copy; 2026 MyWorkspace. Created with ❤️</p>
     </footer>
 
+    <!-- Link Firestore Database-->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <!--Link SortableJS-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+
+    <!-- Link interact interferences-->
     <script src="script.js"></script>
+
+    <!-- Link Firestore Database interact-->
+    <script src="interactFirebase.js"></script>
   </body>
 </html>
