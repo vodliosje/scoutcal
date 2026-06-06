@@ -18,7 +18,7 @@ console.log(
 );
 
 // Save data to firebase
-function saveToCloud() {
+export function saveToCloud() {
   const addresses = [];
   const boxes = addressList.querySelectorAll(".address-box");
 

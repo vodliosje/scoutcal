@@ -36,6 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+import { saveToCloud } from "./interactFirebase.js";
+
 // Initialize SortableJS on address list
 const list = document.getElementById("addressList");
 Sortable.create(list, {
