@@ -42,7 +42,7 @@ window.map.on("load", () => {
     console.log("Map source initialized!");
   };
   // Set the source
-  image.src = "images/map-point-svgrepo-com.svg";
+  image.src = "/images/map-point-svgrepo-com.svg";
 });
 
 map.on("click", "locations-layer", (e) => {
@@ -88,7 +88,7 @@ window.addEventListener("load", () => {
     el.style.width = "40px"; // Adjust size
     el.style.height = "40px";
     el.style.backgroundSize = "100%";
-    el.style.backgroundImage = 'url("images/pin-svgrepo-com.svg")';
+    el.style.backgroundImage = 'url("/images/pin-svgrepo-com.svg")';
     // Add this if you want the "foot" to be on the point
     el.style.backgroundPosition = "center bottom";
 
