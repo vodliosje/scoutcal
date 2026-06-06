@@ -12,6 +12,9 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const docRef = db.collection("appData").doc("my-addresses");
 
+// Import outside funtion
+import { refreshMapWithFirebaseData } from "./interactmap.js";
+
 // Save data to firebase
 export function saveToCloud() {
   const addresses = [];
@@ -44,6 +47,7 @@ export function loadFromCloud(renderCallback) {
       if (doc.exists) {
         const addresses = doc.data();
         renderCallback(addresses.list || []);
+        refreshMapWithFirebaseData(addresses.list);
 
         console.log("Fresh list synchronized from cloud.");
       } else {

@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+//Import out side funtion
 import { saveToCloud, loadFromCloud } from "./interactFirebase.js";
 
 // Evaluates the current DOM order and tags the first item
@@ -92,8 +93,6 @@ Sortable.create(list, {
     console.log("New order updated on Firebase!"); // Push order updates straight to the cloud when dragging stops
   },
 });
-
-loadFromCloud(renderList);
 
 // Handle Adding New Items
 const titleInput = document.getElementById("addressTitle");
@@ -173,3 +172,8 @@ list.addEventListener("click", (e) => {
     }
   }
 });
+
+//----------------------------------------------------------
+//----------------------------------------------------------
+
+loadFromCloud(renderList);

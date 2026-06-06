@@ -1,11 +1,31 @@
 const ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
-const map = new mapboxgl.Map({
+let mapLoaded = false;
+window.map = new mapboxgl.Map({
   accessToken: ACCESS_TOKEN,
   container: "map", // Container ID
   style: "mapbox://styles/mapbox/standard", // Map style to use
   center: [-122.25948, 37.87221], // Starting position [lng, lat]
   zoom: 13, // Starting zoom level
+});
+
+const map = window.map;
+window.map.on("load", () => {
+  mapLoaded = true;
+  map.addSource("firebase-locations", {
+    type: "geojson",
+    data: { type: "FeatureCollection", features: [] },
+  });
+  window.map.addLayer({
+    id: "locations-layer",
+    type: "circle",
+    source: "firebase-locations",
+    paint: {
+      "circle-radius": 8,
+      "circle-color": "#3887be",
+    },
+  });
+  console.log("Map source initialized!");
 });
 
 const marker = new mapboxgl.Marker() // initialize a new marker
@@ -27,7 +47,7 @@ window.addEventListener("load", () => {
     const props = feature.properties;
 
     // Move the map and marker to the new address
-    map.flyTo({ center: coordinates, zoom: 14 });
+    map.flyTo({ center: coordinates, zoom: 13 });
     marker.setLngLat(coordinates);
 
     // --- FIX 1: Extract variables using Mapbox Autofill's standard properties ---
@@ -54,13 +74,13 @@ window.addEventListener("load", () => {
       "\\bCourt\\b": "Ct",
     };
 
-    // --- FIX 2: Run loop for street formatting ---
+    // Run loop for street formatting ---
     for (const [fullName, shortName] of Object.entries(streetReplacements)) {
       const regex = new RegExp(fullName, "gi");
       shortStreet = shortStreet.replace(regex, shortName);
     }
 
-    // --- FIX 3: Run loop for state formatting ---
+    // Run loop for state formatting ---
     for (const [fullState, shortState] of Object.entries(stateReplacements)) {
       const regex = new RegExp(fullState, "gi");
       state = state.replace(regex, shortState);
@@ -79,3 +99,76 @@ window.addEventListener("load", () => {
     }
   });
 });
+
+// Convert address to coordinates
+async function getCoordinates(address) {
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${ACCESS_TOKEN}&limit=1`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+
+  //console.log("getCoordinates");
+
+  // Check if we found a match
+  if (data.features && data.features.length > 0) {
+    return data.features[0].geometry.coordinates; // Returns [lng, lat]
+  } else {
+    console.warn("Could not geocode address:", address);
+    return null;
+  }
+}
+
+// Process Firebase to GEOJson
+async function processFirebaseList(firebaseList) {
+  // Map every item to a promise that fetches coordinates
+  const promises = firebaseList.map(async (item) => {
+    const coords = await getCoordinates(item.address);
+    return {
+      ...item,
+      lng: coords ? coords[0] : null,
+      lat: coords ? coords[1] : null,
+    };
+  });
+
+  // Wait for all requests to finish
+  const processedList = await Promise.all(promises);
+
+  //console.log("processFirebaseList");
+
+  // Filter out items that couldn't be geocoded
+  return processedList.filter((item) => item.lng !== null);
+}
+
+// Update map with process list
+export async function refreshMapWithFirebaseData(firebaseList) {
+  const cleanData = await processFirebaseList(firebaseList);
+
+  //console.log("refreshMapWithFirebaseData");
+
+  // 2. Convert to Mapbox FeatureCollection
+  const geojsonData = {
+    type: "FeatureCollection",
+    features: cleanData.map((item) => ({
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [item.lng, item.lat],
+      },
+      properties: {
+        title: item.name,
+        address: item.address,
+      },
+    })),
+  };
+
+  const attemptUpdate = () => {
+    if (mapLoaded && window.map.getSource("firebase-locations")) {
+      map.getSource("firebase-locations").setData(geojsonData);
+      //console.log("Data successfully pushed to map.");
+    } else {
+      console.warn("Map not ready yet, retrying in 300ms...");
+      setTimeout(attemptUpdate, 300); // Wait and try again
+    }
+  };
+  attemptUpdate();
+}
