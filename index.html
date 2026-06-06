@@ -6,6 +6,12 @@
     <title>ScoutCal</title>
     <link rel="stylesheet" href="main.css" />
 
+    <!-- Link map-->
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+
     <!-- Link icon font-->
     <link
       rel="stylesheet"
@@ -29,12 +35,15 @@
             class="address-input-title"
           />
           <div class="add-address-box">
-            <input
-              type="text"
-              id="addressBox"
-              placeholder="Paste address here"
-              class="address-input"
-            />
+            <mapbox-address-autofill id="mapbox-autofill">
+              <input
+                type="text"
+                id="addressBox"
+                placeholder="Paste address here"
+                class="address-input"
+                autocomplete="address-line1"
+              />
+            </mapbox-address-autofill>
             <button id="addressAddBtn" class="address-add-btn">
               <i class="fa-solid fa-plus"></i>
             </button>
@@ -76,7 +85,7 @@
         </div>
         <div class="map">
           <div class="map-holder">
-            <p class="map">Place map here</p>
+            <div id="map"></div>
           </div>
         </div>
       </div>
@@ -85,6 +94,15 @@
     <footer>
       <p>&copy; 2026 MyWorkspace. Created with ❤️</p>
     </footer>
+
+    <!-- Link MapBox-->
+    <script
+      id="search-js"
+      defer
+      src="https://api.mapbox.com/search-js/v1.2.0/web.js"
+    ></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.js"></script>
+    <script src="interactmap.js"></script>
 
     <!-- Link Firestore Database-->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
