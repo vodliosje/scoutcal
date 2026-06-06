@@ -1,11 +1,10 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyCDorQO3HXKWz2j17EiIBeNtGV2Q954ugE",
-  authDomain: "scoutcal-01.firebaseapp.com",
-  projectId: "scoutcal-01",
-  storageBucket: "scoutcal-01.firebasestorage.app",
-  messagingSenderId: "802626004212",
-  appId: "1:802626004212:web:145a99b38f8286f11aaaa1",
-  measurementId: "G-136XSSB8V4",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
