@@ -49,12 +49,14 @@ Sortable.create(list, {
 });
 
 // Handle Adding New Items
+const titleInput = document.getElementById("addressTitle");
 const addressInput = document.getElementById("addressBox");
 const addBtn = document.getElementById("addressAddBtn");
 
 addBtn.addEventListener("click", () => {
+  const titleValue = titleInput.value.trim();
   const addressValue = addressInput.value.trim();
-  if (addressValue === "") return;
+  if (addressValue === "" || titleValue === "") return;
   // Double check title and address here
 
   const li = document.createElement("li");
@@ -62,7 +64,7 @@ addBtn.addEventListener("click", () => {
   li.innerHTML = `
             <span class="drag-handle"><i class="fa-solid fa-bars"></i></span>
             <div class="address-subbox">
-                <h3 class="address-title">DefautTitle</h3>
+                <h3 class="address-title">${titleValue}</h3>
                 <p class="address-detail">${addressValue}</p>
             </div>
             <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
@@ -78,5 +80,42 @@ list.addEventListener("click", (e) => {
   if (e.target.closest(".delete-btn")) {
     const itemToDelete = e.target.closest(".address-box");
     itemToDelete.remove();
+  }
+
+  // --- HANDLE EDIT BUTTON CLICK ---
+  const editBtn = e.target.closest(".edit-btn");
+  if (editBtn) {
+    const addressBox = editBtn.closest(".address-box");
+    const titleEl = addressBox.querySelector(".address-title");
+    const detailEl = addressBox.querySelector(".address-detail");
+    const icon = editBtn.querySelector("i");
+
+    // Check if we are currently editing or saving
+    const isEditing = titleEl.getAttribute("contenteditable") === "true";
+
+    if (!isEditing) {
+      // SWITCH TO EDIT MODE
+      titleEl.setAttribute("contenteditable", "true");
+      detailEl.setAttribute("contenteditable", "true");
+      detailEl.focus(); // Place the cursor inside the title instantly
+
+      // Change icon to a checkmark/save icon
+      icon.className = "fa-solid fa-check";
+      editBtn.style.color = "#2ecc71"; // Turn icon green while saving
+    } else {
+      // SWITCH BACK TO VIEW MODE (SAVE)
+      titleEl.removeAttribute("contenteditable");
+      detailEl.removeAttribute("contenteditable");
+
+      // Change icon back to a pen
+      icon.className = "fa-solid fa-pen";
+      editBtn.style.color = "#b89077"; // Reset back to blue
+
+      // Optional: Log or save data to your backend here
+      console.log("Saved data:", {
+        name: titleEl.innerText,
+        address: detailEl.innerText,
+      });
+    }
   }
 });

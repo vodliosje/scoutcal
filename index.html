@@ -21,11 +21,10 @@
       <div class="space">
         <div class="hero">
           <h1>Locations</h1>
-
+          <input type="text" id="addressTitle" placeholder="Title" class = "address-input-title"/>
           <div class="add-address-box">
             <input type="text" id="addressBox" placeholder="Paste address here" class = "address-input"/>
             <button id="addressAddBtn" class = "address-add-btn"><i class="fa-solid fa-plus"></i></button>
-            
           </div>
           
           <ul class="address-list" id="addressList">
@@ -35,7 +34,10 @@
                 <h3 class="address-title">Tony Rys</h3>
                 <p class="address-detail">121 Avenue 25, Los Angeles 90001</p>
               </div>
-              <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
+              <div class="btn-container">
+                <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
+                <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
+              </div>
             </li>
             
             <li class="address-box">
@@ -44,7 +46,10 @@
                 <h3 class="address-title">Noel Le</h3>
                 <p class="address-detail">4638 Whitsler, El Monte, CA 90001</p>
               </div>
-              <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
+              <div class="btn-container">
+                <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
+                <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
+              </div>
             </li>
           </ul>
         </div>
