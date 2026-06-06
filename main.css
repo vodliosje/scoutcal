@@ -276,6 +276,12 @@ button {
   height: 100%;
 }
 
+.custom-marker {
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: contain;
+}
+
 /* Footer */
 footer {
   height: 40px;

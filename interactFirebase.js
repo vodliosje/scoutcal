@@ -37,6 +37,8 @@ export function saveToCloud() {
     .set({ list: addresses })
     .then(() => console.log("Cloud database successfully updated!"))
     .catch((error) => console.error("Error writing document: ", error));
+
+  refreshMapWithFirebaseData(addresses);
 }
 
 // Load data from firebase

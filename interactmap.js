@@ -6,31 +6,67 @@ window.map = new mapboxgl.Map({
   container: "map", // Container ID
   style: "mapbox://styles/mapbox/standard", // Map style to use
   center: [-122.25948, 37.87221], // Starting position [lng, lat]
-  zoom: 13, // Starting zoom level
+  zoom: 12, // Starting zoom level
 });
 
 const map = window.map;
 window.map.on("load", () => {
   mapLoaded = true;
-  map.addSource("firebase-locations", {
-    type: "geojson",
-    data: { type: "FeatureCollection", features: [] },
-  });
-  window.map.addLayer({
-    id: "locations-layer",
-    type: "circle",
-    source: "firebase-locations",
-    paint: {
-      "circle-radius": 8,
-      "circle-color": "#3887be",
-    },
-  });
-  console.log("Map source initialized!");
+
+  // Create an image element
+  const image = new Image();
+  image.onload = () => {
+    // Add the image to the map
+    map.addImage("custom-marker", image, { sdf: false });
+
+    // Now add your source and layer
+    map.addSource("firebase-locations", {
+      type: "geojson",
+      data: { type: "FeatureCollection", features: [] },
+    });
+
+    map.addLayer({
+      id: "locations-layer",
+      type: "symbol",
+      source: "firebase-locations",
+      layout: {
+        "icon-image": "custom-marker",
+        "icon-size": 0.05,
+        "icon-anchor": "bottom",
+        "icon-allow-overlap": true,
+      },
+      paint: {
+        "icon-color": "#1e293b",
+      },
+    });
+    console.log("Map source initialized!");
+  };
+  // Set the source
+  image.src = "images/map-point-svgrepo-com.svg";
 });
 
-const marker = new mapboxgl.Marker() // initialize a new marker
-  .setLngLat([-122.25948, 37.87221]) // Marker [lng, lat] coordinates
-  .addTo(map); // Add the marker to the map
+map.on("click", "locations-layer", (e) => {
+  // 1. Get the clicked feature's coordinates from the event
+  const coordinates = e.features[0].geometry.coordinates.slice();
+
+  // 2. Center the map on those coordinates
+  map.flyTo({
+    center: coordinates,
+    zoom: 14, // Zoom in closer on the specific point
+    essential: true,
+  });
+});
+
+map.on("mouseenter", "locations-layer", () => {
+  map.getCanvas().style.cursor = "default";
+});
+map.on("mouseleave", "locations-layer", () => {
+  map.getCanvas().style.cursor = "";
+});
+
+// initialize a new marker
+//  .setLngLat([-122.25948, 37.87221]) // Marker [lng, lat] coordinates
+//  .addTo(map); // Add the marker to the map
 
 window.addEventListener("load", () => {
   // 2. Give the Autofill wrapper your access token
@@ -46,9 +82,28 @@ window.addEventListener("load", () => {
     const coordinates = feature.geometry.coordinates;
     const props = feature.properties;
 
-    // Move the map and marker to the new address
+    // Add marker
+    const el = document.createElement("div");
+    el.className = "custom-marker"; // For CSS styling
+    el.style.width = "40px"; // Adjust size
+    el.style.height = "40px";
+    el.style.backgroundSize = "100%";
+    el.style.backgroundImage = 'url("images/pin-svgrepo-com.svg")';
+    // Add this if you want the "foot" to be on the point
+    el.style.backgroundPosition = "center bottom";
+
+    if (window.currentMarker) {
+      window.currentMarker.remove();
+    }
+
+    window.currentMarker = new mapboxgl.Marker({
+      element: el,
+      anchor: "bottom",
+    })
+      .setLngLat(coordinates)
+      .addTo(map);
+
     map.flyTo({ center: coordinates, zoom: 13 });
-    marker.setLngLat(coordinates);
 
     // --- FIX 1: Extract variables using Mapbox Autofill's standard properties ---
     let shortStreet = props.address_line1 || props.name || "";
@@ -145,6 +200,12 @@ export async function refreshMapWithFirebaseData(firebaseList) {
 
   //console.log("refreshMapWithFirebaseData");
 
+  if (cleanData.length > 0) {
+    const firstLocation = cleanData[0]; // Get the first item
+
+    // Center the map on that location
+    map.setCenter([firstLocation.lng, firstLocation.lat]);
+  }
   // 2. Convert to Mapbox FeatureCollection
   const geojsonData = {
     type: "FeatureCollection",
