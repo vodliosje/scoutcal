@@ -18,50 +18,103 @@ window.map.on("load", () => {
   image.onload = () => {
     // Add the image to the map
     map.addImage("custom-marker", image, { sdf: false });
-
-    // Now add your source and layer
-    map.addSource("firebase-locations", {
-      type: "geojson",
-      data: { type: "FeatureCollection", features: [] },
-    });
-
-    map.addLayer({
-      id: "locations-layer",
-      type: "symbol",
-      source: "firebase-locations",
-      layout: {
-        "icon-image": "custom-marker",
-        "icon-size": 0.05,
-        "icon-anchor": "bottom",
-        "icon-allow-overlap": true,
-      },
-      paint: {
-        "icon-color": "#1e293b",
-      },
-    });
-    console.log("Map source initialized!");
+    checkAndInitLayers();
   };
   // Set the source
   image.src = "/images/map-point-svgrepo-com.svg";
+
+  //Add target pin
+  const targetImage = new Image();
+  targetImage.onload = () => {
+    map.addImage("target-marker", targetImage, { sdf: false });
+    checkAndInitLayers();
+  };
+  targetImage.src = "/images/pin-svgrepo-com.svg";
+
+  function checkAndInitLayers() {
+    if (map.hasImage("custom-marker") && map.hasImage("target-marker")) {
+      if (map.getSource("firebase-locations")) return; // Prevent double initialization
+
+      map.addSource("firebase-locations", {
+        type: "geojson",
+        data: { type: "FeatureCollection", features: [] },
+      });
+
+      map.addLayer({
+        id: "locations-layer",
+        type: "symbol",
+        source: "firebase-locations",
+        layout: {
+          // Mapbox Expression: If 'isTarget' is true, use 'target-marker', else use 'custom-marker'
+          "icon-image": [
+            "case",
+            ["get", "isTarget"],
+            "target-marker",
+            "custom-marker",
+          ],
+          "icon-size": 0.05,
+          "icon-anchor": "bottom",
+          "icon-allow-overlap": true,
+        },
+        paint: {
+          "icon-color": "#1e293b",
+        },
+      });
+      console.log(
+        "Map source and layers initialized with conditional markers!",
+      );
+    }
+  }
 });
 
-map.on("click", "locations-layer", (e) => {
-  // 1. Get the clicked feature's coordinates from the event
-  const coordinates = e.features[0].geometry.coordinates.slice();
+// Initial popup near marker
+const hoverPopup = new mapboxgl.Popup({
+  closeButton: false, // Hide the close button for clean hover styling
+  closeOnClick: false,
+  offset: 15, // Offsets the popup slightly above your marker anchor
+});
 
-  // 2. Center the map on those coordinates
+// Map zoom to marker when click
+map.on("click", "locations-layer", (e) => {
+  const coordinates = e.features[0].geometry.coordinates.slice();
   map.flyTo({
     center: coordinates,
-    zoom: 14, // Zoom in closer on the specific point
+    zoom: 14,
     essential: true,
   });
 });
 
-map.on("mouseenter", "locations-layer", () => {
+map.on("mouseenter", "locations-layer", (e) => {
   map.getCanvas().style.cursor = "default";
+
+  const coordinates = e.features[0].geometry.coordinates.slice();
+  const properties = e.features[0].properties;
+
+  // Shorten Address
+  const fullAddress = properties.address || "";
+  const addressParts = fullAddress.split(",");
+  const shortAddress =
+    addressParts.length > 2
+      ? `${addressParts[0]}, ${addressParts[1].trim()}`
+      : fullAddress;
+
+  const popupHtml = `
+    <div style="padding: 3px; font-family: sans-serif;">
+      <strong style="display: block; font-size: 14px; margin-bottom: 2px;">${properties.title}</strong>
+      <span style="font-size: 12px; color: #64748b;">${shortAddress}</span>
+    </div>
+  `;
+
+  while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+  }
+
+  // Populate the popup and attach it to the map at the marker's spot
+  hoverPopup.setLngLat(coordinates).setHTML(popupHtml).addTo(map);
 });
 map.on("mouseleave", "locations-layer", () => {
   map.getCanvas().style.cursor = "";
+  hoverPopup.remove();
 });
 
 // initialize a new marker
@@ -69,11 +122,9 @@ map.on("mouseleave", "locations-layer", () => {
 //  .addTo(map); // Add the marker to the map
 
 window.addEventListener("load", () => {
-  // 2. Give the Autofill wrapper your access token
   const autofillElement = document.querySelector("mapbox-address-autofill");
   autofillElement.accessToken = ACCESS_TOKEN;
 
-  // 3. Listen for when the user clicks an address from the dropdown
   autofillElement.addEventListener("retrieve", (event) => {
     // Mapbox returns the selected feature data
     const feature = event.detail.features[0];
@@ -155,25 +206,33 @@ window.addEventListener("load", () => {
   });
 });
 
-// Convert address to coordinates
-async function getCoordinates(address) {
+//Get coordinates but for 1 location
+export async function getCoordinates(address) {
+  // Ensure you have access to your token here (e.g., import.meta.env.VITE_MAPBOX_TOKEN)
   const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${ACCESS_TOKEN}&limit=1`;
 
-  const response = await fetch(url);
-  const data = await response.json();
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
 
-  //console.log("getCoordinates");
+    // Check if Mapbox found a match
+    if (data.features && data.features.length > 0) {
+      // Mapbox returns coordinates as an array: [longitude, latitude]
+      const [lng, lat] = data.features[0].geometry.coordinates;
 
-  // Check if we found a match
-  if (data.features && data.features.length > 0) {
-    return data.features[0].geometry.coordinates; // Returns [lng, lat]
-  } else {
-    console.warn("Could not geocode address:", address);
+      // Return them as a labeled object so it is easy to use
+      return { lat: lat, lng: lng };
+    } else {
+      console.warn("Could not geocode address:", address);
+      return null;
+    }
+  } catch (error) {
+    console.error("Network error while fetching coordinates:", error);
     return null;
   }
 }
 
-// Process Firebase to GEOJson
+/* Process Firebase to GEOJson
 async function processFirebaseList(firebaseList) {
   // Map every item to a promise that fetches coordinates
   const promises = firebaseList.map(async (item) => {
@@ -192,24 +251,20 @@ async function processFirebaseList(firebaseList) {
 
   // Filter out items that couldn't be geocoded
   return processedList.filter((item) => item.lng !== null);
-}
+}*/
 
 // Update map with process list
 export async function refreshMapWithFirebaseData(firebaseList) {
-  const cleanData = await processFirebaseList(firebaseList);
-
   //console.log("refreshMapWithFirebaseData");
 
-  if (cleanData.length > 0) {
-    const firstLocation = cleanData[0]; // Get the first item
-
-    // Center the map on that location
+  if (firebaseList.length > 0) {
+    const firstLocation = firebaseList[0];
     map.setCenter([firstLocation.lng, firstLocation.lat]);
   }
   // 2. Convert to Mapbox FeatureCollection
   const geojsonData = {
     type: "FeatureCollection",
-    features: cleanData.map((item) => ({
+    features: firebaseList.map((item) => ({
       type: "Feature",
       geometry: {
         type: "Point",
@@ -218,6 +273,7 @@ export async function refreshMapWithFirebaseData(firebaseList) {
       properties: {
         title: item.name,
         address: item.address,
+        isTarget: item.isTarget,
       },
     })),
   };
@@ -233,5 +289,4 @@ export async function refreshMapWithFirebaseData(firebaseList) {
   };
   attemptUpdate();
   //console.log(cleanData);
-  return cleanData;
 }

@@ -24,10 +24,14 @@ export function saveToCloud() {
   boxes.forEach((box, index) => {
     const title = box.querySelector(".address-title").innerText;
     const detail = box.querySelector(".address-detail").innerText;
+    const latValue = parseFloat(box.dataset.lat);
+    const lngValue = parseFloat(box.dataset.lng);
 
     addresses.push({
       name: title,
       address: detail,
+      lat: latValue,
+      lng: lngValue,
       isTarget: index === 0, // true for the first item, false for all others
     });
   });
@@ -49,11 +53,8 @@ export function loadFromCloud(renderCallback) {
       if (doc.exists) {
         const addresses = doc.data();
 
-        const procressAddresses = await refreshMapWithFirebaseData(
-          addresses.list,
-        );
-        console.log(procressAddresses);
-        renderCallback(procressAddresses);
+        //console.log(procressAddresses);
+        renderCallback(addresses.list);
         console.log("Fresh list synchronized from cloud.");
       } else {
         console.log("No cloud data found yet. Creating clean slate.");

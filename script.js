@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Import out side funtion
 import { saveToCloud, loadFromCloud } from "./interactFirebase.js";
+import { getCoordinates, refreshMapWithFirebaseData } from "./interactmap.js";
 
 // Evaluates the current DOM order and tags the first item
 function updateTargetHighlight() {
@@ -81,6 +82,7 @@ function renderList(firebaseData) {
 
   // Run the highlight logic to catch the first item immediately on load
   updateTargetHighlight();
+  refreshMapWithFirebaseData(firebaseData);
 }
 
 // Initialize SortableJS on address list
@@ -120,14 +122,24 @@ const titleInput = document.getElementById("addressTitle");
 const addressInput = document.getElementById("addressBox");
 const addBtn = document.getElementById("addressAddBtn");
 
-addBtn.addEventListener("click", () => {
+addBtn.addEventListener("click", async () => {
   const titleValue = titleInput.value.trim();
   const addressValue = addressInput.value.trim();
+
   if (addressValue === "" || titleValue === "") return;
-  // Double check title and address here
+
+  const coordinates = await getCoordinates(addressValue);
+  if (!coordinates) {
+    alert(
+      "Could not find coordinates for this address. Please check the spelling.",
+    );
+    return;
+  }
 
   const li = document.createElement("li");
   li.className = "address-box";
+  li.dataset.lat = coordinates.lat;
+  li.dataset.lng = coordinates.lng;
   li.innerHTML = `
     <span class="drag-handle"><i class="fa-solid fa-bars"></i></span>
     <div class="address-subbox">
@@ -142,7 +154,8 @@ addBtn.addEventListener("click", () => {
 
   list.appendChild(li);
   saveToCloud();
-  addressInput.value = ""; // Clear input
+  addressInput.value = "";
+  titleInput.value = ""; // Clear input
 });
 
 // Handle Deleting Items (Event Delegation)
