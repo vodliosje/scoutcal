@@ -140,9 +140,9 @@ Sortable.create(list, {
   handle: ".drag-handle", // Restricts dragging to the icon
   animation: 150, // Smooth sliding animation speed (in ms)
   ghostClass: "sortable-ghost", // Class applied to the moving item
-  onEnd: function (evt) {
-    updateTargetHighlight();
-    updateAllETAs();
+  onEnd: async function (evt) {
+    await updateTargetHighlight();
+    await updateAllETAs();
     saveToCloud();
     console.log("New order updated on Firebase!"); // Push order updates straight to the cloud when dragging stops
   },
