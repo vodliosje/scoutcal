@@ -205,7 +205,18 @@ button {
   flex: 1;
   flex-direction: column;
   align-items: flex-start;
-  text-align: center;
+  text-align: left;
+  margin-bottom: 3px;
+}
+
+.hero .address-box .address-eta,
+.address-detail {
+  font-size: var(--font-size-s);
+  margin-bottom: 0;
+}
+
+.hero .address-box .address-eta {
+  font-weight: var(--font-weight-bold);
 }
 
 .hero .address-list .is-target {
