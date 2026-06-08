@@ -24,12 +24,14 @@ export function saveToCloud() {
   boxes.forEach((box, index) => {
     const title = box.querySelector(".address-title").innerText;
     const detail = box.querySelector(".address-detail").innerText;
+    const eta = box.querySelector(".address-eta").innerText;
     const latValue = parseFloat(box.dataset.lat);
     const lngValue = parseFloat(box.dataset.lng);
 
     addresses.push({
       name: title,
       address: detail,
+      eta: eta,
       lat: latValue,
       lng: lngValue,
       isTarget: index === 0, // true for the first item, false for all others

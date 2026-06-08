@@ -38,7 +38,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Import out side funtion
 import { saveToCloud, loadFromCloud } from "./interactFirebase.js";
-import { getCoordinates, refreshMapWithFirebaseData } from "./interactmap.js";
+import {
+  getCoordinates,
+  refreshMapWithFirebaseData,
+  getDrivingETA,
+} from "./interactmap.js";
 
 // Evaluates the current DOM order and tags the first item
 function updateTargetHighlight() {
@@ -71,6 +75,7 @@ function renderList(firebaseData) {
     <div class="address-subbox">
         <h3 class="address-title">${item.name}</h3>
         <p class="address-detail">${item.address}</p>
+        <p class="address-eta">${item.eta}</p>
     </div>
     <div class="btn-container">
         <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
@@ -136,6 +141,25 @@ addBtn.addEventListener("click", async () => {
     return;
   }
 
+  const targetElement = document.querySelector(".address-box.is-target");
+  let etaText = "N/A";
+
+  if (targetElement) {
+    const targetLat = parseFloat(targetElement.dataset.lat);
+    const targetLng = parseFloat(targetElement.dataset.lng);
+
+    const calculatedETA = await getDrivingETA(
+      targetLng,
+      targetLat, // Start (Target)
+      coordinates.lng,
+      coordinates.lat, // End (New Location)
+    );
+
+    if (calculatedETA) {
+      etaText = calculatedETA;
+    }
+  }
+
   const li = document.createElement("li");
   li.className = "address-box";
   li.dataset.lat = coordinates.lat;
@@ -145,6 +169,7 @@ addBtn.addEventListener("click", async () => {
     <div class="address-subbox">
         <h3 class="address-title">${titleValue}</h3>
         <p class="address-detail">${addressValue}</p>
+        <p class="address-eta">${etaText}</p>
     </div>
     <div class="btn-container">
         <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>

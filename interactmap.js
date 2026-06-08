@@ -284,9 +284,43 @@ export async function refreshMapWithFirebaseData(firebaseList) {
       //console.log("Data successfully pushed to map.");
     } else {
       console.warn("Map not ready yet, retrying in 300ms...");
-      setTimeout(attemptUpdate, 300); // Wait and try again
+      setTimeout(attemptUpdate, 450); // Wait and try again
     }
   };
   attemptUpdate();
   //console.log(cleanData);
+}
+
+//Calculate ETA feature
+export async function getDrivingETA(startLng, startLat, endLng, endLat) {
+  // Mapbox Directions API requires coordinates in Longitude,Latitude order
+  const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${startLng},${startLat};${endLng},${endLat}?access_token=${ACCESS_TOKEN}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.routes && data.routes.length > 0) {
+      const durationInSeconds = data.routes[0].duration;
+      return formatDuration(durationInSeconds);
+    } else {
+      console.warn("No route found between these points.");
+      return null;
+    }
+  } catch (error) {
+    console.error("Failed to calculate ETA:", error);
+    return null;
+  }
+}
+
+// Helper function to turn seconds into text (e.g., "45 mins")
+function formatDuration(seconds) {
+  const minutes = Math.round(seconds / 60);
+  if (minutes < 60) {
+    return `${minutes} min${minutes !== 1 ? "s" : ""}`;
+  } else {
+    const hours = Math.floor(minutes / 60);
+    const remainingMins = minutes % 60;
+    return `${hours} hr${hours !== 1 ? "s" : ""} ${remainingMins} min${remainingMins !== 1 ? "s" : ""}`;
+  }
 }
