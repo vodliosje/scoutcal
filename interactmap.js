@@ -121,6 +121,7 @@ map.on("mouseleave", "locations-layer", () => {
 //  .setLngLat([-122.25948, 37.87221]) // Marker [lng, lat] coordinates
 //  .addTo(map); // Add the marker to the map
 
+// Market set up for search box
 window.addEventListener("load", () => {
   const autofillElement = document.querySelector("mapbox-address-autofill");
   autofillElement.accessToken = ACCESS_TOKEN;

@@ -61,6 +61,50 @@ function updateTargetHighlight() {
   });
 }
 
+// Update target ETA after updateTargetHighlight
+async function updateAllETAs() {
+  const boxes = addressList.querySelectorAll(".address-box");
+  const targetBox = addressList.querySelector(".address-box.is-target");
+
+  // If there's no target or no list, just stop
+  if (!targetBox || boxes.length === 0) return;
+
+  const targetLat = parseFloat(targetBox.dataset.lat);
+  const targetLng = parseFloat(targetBox.dataset.lng);
+
+  // 2. Loop through every box using a standard for-loop (to support async/await)
+  for (const box of boxes) {
+    // Find the ETA element inside this specific box
+    const etaElement = box.querySelector(".address-eta");
+    if (!etaElement) continue; // Skip if this item doesn't have an ETA badge
+
+    // 3. If this box IS the target, it doesn't need an ETA to itself
+    if (box.classList.contains("is-target")) {
+      etaElement.innerHTML = `<i class="fa-solid fa-car"></i> Current Target`;
+      continue;
+    }
+
+    // 4. It's not the target, so calculate the ETA
+    const itemLat = parseFloat(box.dataset.lat);
+    const itemLng = parseFloat(box.dataset.lng);
+
+    // Call your Mapbox API function
+    const calculatedETA = await getDrivingETA(
+      targetLng,
+      targetLat,
+      itemLng,
+      itemLat,
+    );
+
+    // 5. Update the HTML text with the new ETA
+    if (calculatedETA) {
+      etaElement.innerHTML = `<i class="fa-solid fa-car"></i> ${calculatedETA}`;
+    } else {
+      etaElement.innerHTML = `<i class="fa-solid fa-car"></i> N/A`;
+    }
+  }
+}
+
 // Renders the initial list from Firebase
 function renderList(firebaseData) {
   addressList.innerHTML = "";
@@ -75,7 +119,7 @@ function renderList(firebaseData) {
     <div class="address-subbox">
         <h3 class="address-title">${item.name}</h3>
         <p class="address-detail">${item.address}</p>
-        <p class="address-eta">${item.eta}</p>
+        <p class="address-eta"><i class="fa-solid fa-car"></i> ${item.eta}</p>
     </div>
     <div class="btn-container">
         <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
@@ -98,6 +142,7 @@ Sortable.create(list, {
   ghostClass: "sortable-ghost", // Class applied to the moving item
   onEnd: function (evt) {
     updateTargetHighlight();
+    updateAllETAs();
     saveToCloud();
     console.log("New order updated on Firebase!"); // Push order updates straight to the cloud when dragging stops
   },
@@ -169,7 +214,7 @@ addBtn.addEventListener("click", async () => {
     <div class="address-subbox">
         <h3 class="address-title">${titleValue}</h3>
         <p class="address-detail">${addressValue}</p>
-        <p class="address-eta">${etaText}</p>
+        <p class="address-eta"><i class="fa-solid fa-car"></i>${etaText}</p>
     </div>
     <div class="btn-container">
         <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
