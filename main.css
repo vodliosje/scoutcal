@@ -323,3 +323,41 @@ footer {
 footer p {
   margin-bottom: 0;
 }
+
+@media screen and (max-width: 1200px) {
+  body {
+    overflow: hidden;
+    height: 100vh;
+  }
+  main {
+    flex-direction: column;
+    height: calc(100vh - 70px - 40px);
+  }
+  .space {
+    flex-direction: column-reverse;
+    gap: 15px;
+    height: 100%;
+  }
+  .map {
+    flex: 1;
+    height: 50vh;
+  }
+  .map .map-holder {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero {
+    flex: 1;
+    min-height: 0;
+    max-width: 100%;
+    height: auto;
+    overflow: hidden;
+  }
+
+  #addressList {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+  }
+}
