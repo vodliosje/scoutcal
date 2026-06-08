@@ -63,6 +63,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow: hidden;
 }
 
 /* Header */
@@ -142,6 +143,8 @@ button {
 .hero {
   flex: 1;
   text-align: center;
+  display: flex;
+  flex-direction: column;
   background-color: var(--card-bg);
   padding: 5px 15px;
   border-radius: 10px;
@@ -149,6 +152,7 @@ button {
   max-width: 500px;
   width: 100%;
   height: calc(100vh - 70px - 40px);
+  overflow-y: hidden;
 }
 
 .hero .add-address-box {
@@ -189,6 +193,16 @@ button {
   color: var(--white-color);
   background: var(--header-bg);
 }
+
+#addressList {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .hero .address-list .address-box {
   display: flex;
   justify-content: space-between;
@@ -265,6 +279,7 @@ button {
 .map {
   flex: 2;
   align-items: center;
+  height: 100%;
 }
 
 .map .map-holder {
@@ -300,6 +315,9 @@ footer {
   padding: 10px;
   font-size: var(--font-size-s);
   background-color: rgba(0, 0, 0, 0.05);
+  z-index: 50;
+  flex-shrink: 0;
+  position: relative;
 }
 
 footer p {
